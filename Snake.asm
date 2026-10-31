@@ -1,3 +1,4 @@
+MAXSEG equ 100
 left equ 0
 top equ 2
 row equ 15
@@ -13,7 +14,7 @@ bottom equ top+row
     gameovermsg db "Game Over", 0
     scoremsg db "Score: ",0
     head db '^',10,10
-    body db '*',10,11, 3*15 DUP(0)
+        body db '*',10,11, 3*MAXSEG DUP(0)
     segmentcount db 1
     fruitactive db 1
     fruitx db 8
@@ -96,6 +97,8 @@ mov ax, 0003H
 int 10h    
 mov ax, 4c00h
 int 21h  
+
+main ENDP
 
 delay proc 
     
@@ -380,27 +383,34 @@ done_checking_the_head:
 game_over:
     inc gameover
     ret
-i_ate_fruit:    
+i_ate_fruit:
+    cmp segmentcount, MAXSEG
+    jb  puede_crecer
 
+    pop dx                   ; posición vieja de la cola
+    mov bl, 0
+    call writecharat         ; tope alcanzado: se borra la cola, no crece más
+    jmp quitar_fruta
+
+puede_crecer:
     mov al, segmentcount
     xor ah, ah
-    
-    
     lea bx, body
     mov cx, 3
-    mul cx
-    
-    pop dx
+    mul cx                   ; AX = segmentcount * 3
+    pop dx                   ; posición vieja de la cola
     add bx, ax
     mov byte ptr ds:[bx], '*'
     mov [bx+1], dx
-    inc segmentcount 
+    inc segmentcount
+
+quitar_fruta:
     mov dh, fruity
     mov dl, fruitx
     mov bl, 0
-    call writecharat
-    mov fruitactive, 0   
-    ret 
+    call writecharat         ; borra la 'X' de la pantalla
+    mov fruitactive, 0
+    ret
 shiftsnake endp
    
 printbox proc
@@ -525,7 +535,5 @@ exit_writestringat:
     pop dx
     ret
 writestringat endp
-     
-main endp
           
-end main
+END main
