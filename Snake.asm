@@ -136,7 +136,7 @@ regenerate:
     
     pop ax
     mov bl, col
-    dec dl
+    dec bl
     xor bh, bh
     xor dx, dx
     div bx
