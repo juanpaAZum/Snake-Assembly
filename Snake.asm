@@ -1,4 +1,6 @@
 MAXSEG equ 100
+MINDELAY equ 2           ; velocidad máxima (ticks de espera mínimos)
+FRUTAS_NIVEL equ 3       ; cada cuántas frutas se acelera
 left equ 0
 top equ 2
 row equ 15
@@ -22,6 +24,7 @@ bottom equ top+row
     gameover db 0
     quit db 0   
     delaytime db 5
+    speedcounter db 0        ; frutas comidas desde el último aumento de velocidad
 
 
 .stack
@@ -406,6 +409,14 @@ puede_crecer:
     inc segmentcount
 
 quitar_fruta:
+    inc speedcounter
+    cmp speedcounter, FRUTAS_NIVEL
+    jb  sin_acelerar         ; aún no se llega a las frutas necesarias
+    mov speedcounter, 0
+    cmp delaytime, MINDELAY
+    jbe sin_acelerar         ; ya está en la velocidad máxima
+    dec delaytime            ; menos espera = más rápido
+sin_acelerar:
     mov dh, fruity
     mov dl, fruitx
     mov bl, 0
