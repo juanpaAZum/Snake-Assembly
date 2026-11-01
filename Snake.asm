@@ -117,8 +117,6 @@ jmp_delay:
 delay endp
    
 fruitgeneration proc
-    mov ch, fruity
-    mov cl, fruitx
 regenerate:
     
     cmp fruitactive, 1
@@ -145,12 +143,6 @@ regenerate:
     mov fruitx, dl
     inc fruitx
     
-    cmp fruitx, cl
-    jne nevermind
-    cmp fruity, ch
-    jne nevermind
-    jmp regenerate             
-nevermind:
     mov al, fruitx
     ror al,1
     jc regenerate
@@ -160,6 +152,9 @@ nevermind:
     
     mov dh, fruity
     mov dl, fruitx
+    lea bx, head
+    cmp dx, [bx+1]           ; que no caiga sobre la cabeza
+    je regenerate
     call readcharat
     cmp bl, '*'
     je regenerate
