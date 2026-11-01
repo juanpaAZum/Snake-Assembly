@@ -134,18 +134,14 @@ regenerate:
     mov fruity, dl
     inc fruity
     
-    pop ax
-    mov bl, col
-    dec bl
-    xor bh, bh
+        pop ax
     xor dx, dx
-    div bx
+    xor bh, bh
+    mov bl, 19               ; 19 columnas pares posibles: 2,4,...,38
+    div bx                   ; DX = ticks mod 19  (0..18)
+    shl dl, 1                ; 0,2,...,36
+    add dl, 2                ; 2,4,...,38 (siempre par)
     mov fruitx, dl
-    inc fruitx
-    
-    mov al, fruitx
-    ror al,1
-    jc regenerate
     
     add fruity, top
     add fruitx, left 
