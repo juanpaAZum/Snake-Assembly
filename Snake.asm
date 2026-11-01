@@ -212,7 +212,7 @@ setcursorpos endp
 
 draw proc
     lea bx, scoremsg
-    mov dx, 0109
+    mov dx, 0109h
     call writestringat
     
     
