@@ -100,20 +100,18 @@ int 21h
 
 main ENDP
 
-delay proc 
-    
-    mov ah, 00
+delay proc
+    mov ah, 00h
     int 1Ah
-    mov bx, dx
-    
-jmp_delay:
-    int 1Ah
-    sub dx, bx
+    mov bx, dx               ; BX = tick inicial
 
-    cmp dl, delaytime                                                      
-    jl jmp_delay    
+jmp_delay:
+    mov ah, 00h              ; asegurar AH=0 en cada lectura
+    int 1Ah
+    sub dx, bx               ; DX = ticks transcurridos
+    cmp dl, delaytime
+    jb  jmp_delay            ; sin signo: repetir mientras no haya pasado el tiempo
     ret
-    
 delay endp
    
 fruitgeneration proc
