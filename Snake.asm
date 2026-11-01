@@ -307,9 +307,8 @@ shiftsnake proc
     inc bx    
     inc bx
     xor cx, cx
-l:      
-    mov si, [bx]
-    test si, [bx]
+l:
+    cmp byte ptr [bx], 0     ; ¿carácter 0? = fin de la serpiente
     jz outside
     inc cx     
     inc bx
