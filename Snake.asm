@@ -218,10 +218,18 @@ draw proc
     
     add dx, 7
     call setcursorpos
-    mov al, segmentcount
+        mov al, segmentcount
     dec al
     xor ah, ah
+    test ax, ax
+    jnz score_normal
+    mov dl, '0'              ; caso especial: puntaje 0
+    mov ah, 02h
+    int 21h
+    jmp score_listo
+score_normal:
     call dispnum
+score_listo:
         
     lea si, head
 draw_loop:
