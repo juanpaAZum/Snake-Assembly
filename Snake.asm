@@ -242,17 +242,22 @@ out_draw:
 draw endp
 
 readchar proc
+    xor dl, dl               ; DL = 0: ninguna tecla (valor por defecto)
+leer_siguiente:
     mov ah, 01H
-    int 16H
-    jnz keybdpressed
-    xor dl, dl
-    ret
-keybdpressed:
+    int 16H                  ; ¿hay una tecla esperando en el buffer?
+    jz fin_readchar          ; no hay más: terminar
     mov ah, 00H
-    int 16H
-    mov dl,al
+    int 16H                  ; sacar la tecla del buffer (AL = carácter)
+    cmp al, 0
+    je leer_siguiente        ; tecla especial (flechas, F1...): ignorarla
+    mov dl, al               ; recordar la última tecla válida
+    cmp al, 'q'
+    je fin_readchar          ; 'q' (salir) tiene prioridad
+    jmp leer_siguiente       ; seguir vaciando el buffer
+fin_readchar:
     ret
-readchar endp                    
+readchar endp                  
 
 keyboardfunctions proc
     
