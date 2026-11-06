@@ -257,7 +257,13 @@ leer_siguiente:
     int 16H                  ; sacar la tecla del buffer (AL = carácter)
     cmp al, 0
     je leer_siguiente        ; tecla especial (flechas, F1...): ignorarla
-    mov dl, al               ; recordar la última tecla válida
+        cmp al, 'A'
+    jb  no_mayuscula         ; menor que 'A': no es una letra mayúscula
+    cmp al, 'Z'
+    ja  no_mayuscula         ; mayor que 'Z': tampoco
+    add al, 20h              ; 'A'..'Z' -> 'a'..'z'
+no_mayuscula:
+    mov dl, al               ; recordar la última tecla válida              ; recordar la última tecla válida
     cmp al, 'q'
     je fin_readchar          ; 'q' (salir) tiene prioridad
     jmp leer_siguiente       ; seguir vaciando el buffer
