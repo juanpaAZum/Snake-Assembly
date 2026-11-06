@@ -51,10 +51,13 @@ main proc far
 	mov ah, 09H
 	int 21h
 	
-	mov ah, 07h
+		mov ah, 07h
 	int 21h
 	mov ax, 0003H
 	int 10H
+    mov ah, 01h              ; función 01h: definir la forma del cursor
+    mov cx, 2000h            ; bit 5 de CH activo = cursor invisible
+    int 10h
     call printbox      
     
 mainloop:       
