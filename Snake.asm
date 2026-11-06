@@ -11,7 +11,7 @@ bottom equ top+row
 .model small
 .data          
     msg db "Welcome to the snake game!!",0
-    instructions db 0AH,0DH,"Use a, s, d and w to control your snake",0AH,0DH,"Use q anytime to quit",0DH,0AH, "Press any key to continue$"
+    instructions db 0AH,0DH,"Use a, s, d, w or the arrow keys to control your snake",0AH,0DH,"Use q anytime to quit",0DH,0AH, "Press any key to continue$"
     quitmsg db "Thanks for playing! hope you enjoyed",0
     gameovermsg db "Game Over", 0
     scoremsg db "Score: ",0
@@ -256,7 +256,9 @@ leer_siguiente:
     mov ah, 00H
     int 16H                  ; sacar la tecla del buffer (AL = carácter)
     cmp al, 0
-    je leer_siguiente        ; tecla especial (flechas, F1...): ignorarla
+    je tecla_especial        ; tecla especial (flechas, F1...): se traduce aparte
+    cmp al, 0E0h
+    je tecla_especial        ; flechas del bloque dedicado en teclados extendidos       ; tecla especial (flechas, F1...): ignorarla
         cmp al, 'A'
     jb  no_mayuscula         ; menor que 'A': no es una letra mayúscula
     cmp al, 'Z'
@@ -266,7 +268,26 @@ no_mayuscula:
     mov dl, al               ; recordar la última tecla válida              ; recordar la última tecla válida
     cmp al, 'q'
     je fin_readchar          ; 'q' (salir) tiene prioridad
+        jmp leer_siguiente       ; seguir vaciando el buffer
+
+tecla_especial:              ; AH = código de escaneo de la tecla
+    mov al, 'w'
+    cmp ah, 48h              ; flecha arriba
+    je tecla_traducida
+    mov al, 's'
+    cmp ah, 50h              ; flecha abajo
+    je tecla_traducida
+    mov al, 'a'
+    cmp ah, 4Bh              ; flecha izquierda
+    je tecla_traducida
+    mov al, 'd'
+    cmp ah, 4Dh              ; flecha derecha
+    je tecla_traducida
+    jmp leer_siguiente       ; cualquier otra tecla especial (F1, Inicio...) se ignora
+tecla_traducida:
+    mov dl, al               ; DL = 'w', 's', 'a' o 'd'
     jmp leer_siguiente       ; seguir vaciando el buffer
+
 fin_readchar:
     ret
 readchar endp                  
